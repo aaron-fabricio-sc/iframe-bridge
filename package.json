@@ -1,0 +1,17 @@
+{
+  "name": "@aaroncode/iframe-bridge",
+  "version": "0.1.0",
+  "description": "Librería para comunicación entre app y iframe",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [
+    "iframe",
+    "postMessage"
+  ],
+  "author": "Aaron Fabricio Santa Cruz Valdez",
+  "license": "MIT",
+  "types": "./dist/index.d.ts"
+}
