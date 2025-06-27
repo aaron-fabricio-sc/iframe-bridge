@@ -1,136 +1,97 @@
-export interface BridgeOptions {
-  allowedOrigins: string[]; // Lista de orígenes (URLs) permitidos para recibir mensajes
-  debug?: boolean; // Si se activa, se muestran logs útiles en consola
+// Interfaz para los datos de la entidad que se enviarán al iframe
+export interface KycEntity {
+  id: string;
+  apiKey: string;
+  [key: string]: any;
 }
 
-type MessageHandler = (data: any) => any | Promise<any>;
+// Opciones de configuración para la clase KycIframeBridge
+export interface KycIframeBridgeOptions {
+  iframeId: string; // ID del elemento iframe en el DOM
+  buttonId: string; // ID del botón que abre el iframe
+  allowedOrigins: string[]; // Lista de orígenes permitidos
+  iframeUrl: string; // URL que se cargará en el iframe
+  entity: KycEntity; // Datos de la entidad a enviar
+  onExit?: (data: any) => void; // Callback opcional al cerrar el iframe
+  onError?: (data: any) => void; // Callback opcional para errores
+}
 
-type MessageData = {
-  type: string;
-  data?: any;
-  requestId?: string;
-};
-
-export class IframeBridge {
-  private handlers = new Map<string, MessageHandler>(); // Almacena funciones manejadoras por tipo de mensaje
-  private pendingRequests = new Map<string, (data: any) => void>(); // Guarda promesas pendientes para emparejar respuesta
+// Clase principal que gestiona la comunicación con el iframe
+export class KycIframeBridge {
+  private iframe: HTMLIFrameElement;
+  private button: HTMLButtonElement;
   private allowedOrigins: string[];
-  private debug: boolean;
+  private iframeUrl: string;
+  private entity: KycEntity;
+  private onExit?: (data: any) => void;
+  private onError?: (data: any) => void;
 
-  constructor(
-    private targetWindow: Window, // Ventana destino (puede ser `iframe.contentWindow` o `window.parent`)
-    options: BridgeOptions
-  ) {
+  constructor(options: KycIframeBridgeOptions) {
+    // Obtiene las referencias a los elementos del DOM
+    this.iframe = document.getElementById(
+      options.iframeId
+    ) as HTMLIFrameElement;
+    this.button = document.getElementById(
+      options.buttonId
+    ) as HTMLButtonElement;
     this.allowedOrigins = options.allowedOrigins;
-    this.debug = options.debug || false;
+    this.iframeUrl = options.iframeUrl;
+    this.entity = options.entity;
+    this.onExit = options.onExit;
+    this.onError = options.onError;
 
-    // Escucha todos los mensajes que lleguen a la ventana actual
-    window.addEventListener("message", this._onMessage.bind(this));
+    // Asigna el evento click al botón para abrir el iframe
+    this.button.addEventListener("click", this.openIframe.bind(this));
+    // Escucha los mensajes provenientes del iframe
+    window.addEventListener("message", this.handleMessage.bind(this));
   }
 
-  /**
-   * Envía un mensaje a la ventana destino sin esperar respuesta
-   * @param type Tipo del mensaje (por ejemplo: "alerta", "statusUpdate")
-   * @param data Datos que se desean enviar
-   */
-  public send(type: string, data?: any) {
-    this._postMessage({ type, data });
-  }
-
-  /**
-   * Envía un mensaje esperando una respuesta (como una promesa)
-   * @param type Tipo del mensaje (por ejemplo: "calcular")
-   * @param data Datos que se desean enviar
-   * @returns Promesa que se resuelve cuando llega la respuesta
-   */
-  public request(type: string, data?: any): Promise<any> {
-    const requestId = this._uuid(); // ID único para emparejar respuesta
-
-    return new Promise((resolve) => {
-      this.pendingRequests.set(requestId, resolve); // Guarda el resolve
-      this._postMessage({ type, data, requestId }); // Envía mensaje con ID
-    });
-  }
-
-  /**
-   * Registra una función para manejar un tipo específico de mensaje recibido
-   * @param type Tipo de mensaje (como "resolverEcuacion")
-   * @param handler Función que procesará ese tipo de mensaje
-   */
-  public on(type: string, handler: MessageHandler) {
-    this.handlers.set(type, handler);
-  }
-
-  /**
-   * Maneja la recepción de un mensaje entrante
-   */
-  private async _onMessage(event: MessageEvent) {
-    // Ignora mensajes que no provienen de orígenes permitidos
-    if (!this.allowedOrigins.includes(event.origin)) {
-      if (this.debug)
-        console.warn("[IframeBridge] Origen no permitido:", event.origin);
+  // Método para mostrar el iframe y enviar los datos de la entidad
+  private openIframe(): void {
+    // Verifica si el origen está permitido
+    /*  if (!this.allowedOrigins.includes(this.iframeUrl)) {
+      alert("Origen no permitido");
       return;
-    }
-
-    const { type, data, requestId } = event.data || {};
-
-    // Ignora mensajes sin tipo
-    if (!type) return;
-
-    if (this.debug) {
-      console.log("[IframeBridge] Mensaje recibido:", type, data);
-    }
-
-    // Si es una respuesta a un request anterior
-    if (requestId && this.pendingRequests.has(requestId)) {
-      const resolve = this.pendingRequests.get(requestId)!;
-      resolve(data); // resuelve la promesa
-      this.pendingRequests.delete(requestId); // elimina la entrada
-      return;
-    }
-
-    // Buscar si hay un handler registrado para este tipo
-    const handler = this.handlers.get(type);
-    if (handler) {
-      try {
-        const result = await handler(data); // ejecuta handler
-        // Si había un requestId, significa que esperan una respuesta
-        if (requestId) {
-          this._postMessage({ type, data: result, requestId });
-        }
-      } catch (error) {
-        console.error("[IframeBridge] Error en handler:", error);
-        // Si ocurre error, envía respuesta con mensaje de error
-        if (requestId) {
-          this._postMessage({
-            type,
-            data: { error: "Error interno" },
-            requestId,
-          });
-        }
+    } */
+    // Muestra el iframe y establece su URL
+    this.iframe.src = this.iframeUrl;
+    this.iframe.style.display = "block";
+    // Espera 1 segundo antes de enviar el mensaje al iframe
+    setTimeout(() => {
+      const iframeWindow = this.iframe.contentWindow;
+      if (iframeWindow) {
+        // Envía los datos de la entidad al iframe mediante postMessage
+        iframeWindow.postMessage(
+          {
+            type: "communication-iframe",
+            data: this.entity,
+          },
+          this.iframeUrl
+        );
       }
-    }
+    }, 500);
   }
 
-  /**
-   * Envía un mensaje a la ventana destino
-   * @param message Objeto con tipo, datos y opcionalmente un requestId
-   */
-  private _postMessage(message: MessageData) {
-    if (this.debug) {
-      console.log("[IframeBridge] Enviando mensaje:", message);
+  // Maneja los mensajes recibidos desde el iframe
+  private handleMessage(event: MessageEvent): void {
+    // Si el mensaje indica un error de origen, ejecuta el callback de error y oculta el iframe
+    if (event.data?.type === "kyc-origin-error") {
+      if (this.onError) this.onError(event.data);
+      this.iframe.style.display = "none";
+      return;
     }
-
-    // Enviar al primer origen permitido (es lo más seguro)
-    this.targetWindow.postMessage(message, this.allowedOrigins[0]);
-  }
-
-  /**
-   * Genera un ID único para las solicitudes que esperan respuesta
-   */
-  private _uuid(): string {
-    if (crypto && crypto.randomUUID) return crypto.randomUUID();
-    // Fallback si el navegador no tiene randomUUID
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+    // Verifica que el origen del mensaje esté permitido
+    /* if (!this.allowedOrigins.includes(event.origin)) {
+      return;
+    } */
+    // Procesa el mensaje recibido
+    const { type, data } = event.data || {};
+    // Si el mensaje es exitRequest, ejecuta el callback de salida y oculta el iframe
+    if (type === "exitRequest") {
+      if (this.onExit) this.onExit(data);
+      this.iframe.style.display = "none";
+    }
   }
 }
+
+export default KycIframeBridge;
