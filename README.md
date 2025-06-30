@@ -8,11 +8,18 @@ Librería para facilitar la comunicación segura entre una aplicación padre y u
 
 ### Instalación
 
-#### Opción 1: Instalar desde npm
+#### Opción 1: Instalar desde npm y copiar el archivo JS
 
-```bash
-npm install @aaroncode/iframe-bridge
-```
+1. Instala la librería:
+   ```bash
+   npm install @aaroncode/iframe-bridge
+   ```
+2. Busca el archivo `index.js` dentro de `node_modules/@aaroncode/iframe-bridge/dist/`.
+3. Copia ese archivo a tu proyecto (por ejemplo, al mismo nivel que tu archivo HTML o JS principal).
+4. Importa la librería en tu código:
+   ```js
+   import { KycIframeBridge } from "./index.js";
+   ```
 
 #### Opción 2: Instalar desde el repositorio (requiere compilar)
 
@@ -21,9 +28,9 @@ npm install @aaroncode/iframe-bridge
    git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
    cd wdi_kyc_sdk_web
    ```
-2. Compila el código TypeScript usa el comando:
+2. Compila el código TypeScript:
    ```bash
-   npm run build
+   npm install -g typescript
    tsc
    ```
    Esto generará los archivos JavaScript en la carpeta `dist/`.
@@ -32,6 +39,23 @@ npm install @aaroncode/iframe-bridge
    ```js
    import { KycIframeBridge } from "./index.js";
    ```
+
+#### Opción 3: Instalar desde npm (recomendado para proyectos con bundler)
+
+```bash
+npm install @aaroncode/iframe-bridge
+```
+
+Luego importa la librería en tu código:
+```js
+import { KycIframeBridge } from "@aaroncode/iframe-bridge";
+```
+
+
+
+##### ~~Opción CDN~~
+
+> ⚠️ **No disponible:** La librería no funciona correctamente si se importa directamente desde CDN.
 
 ---
 
@@ -102,11 +126,18 @@ const bridge = new KycIframeBridge({
 
 ### Installation
 
-#### Option 1: Install from npm
+#### Option 1: Install from npm and copy the JS file
 
-```bash
-npm install @aaroncode/iframe-bridge
-```
+1. Install the library:
+   ```bash
+   npm install @aaroncode/iframe-bridge
+   ```
+2. Find the `index.js` file inside `node_modules/@aaroncode/iframe-bridge/dist/`.
+3. Copy this file to your project (for example, next to your main HTML or JS file).
+4. Import the library in your code:
+   ```js
+   import { KycIframeBridge } from "./index.js";
+   ```
 
 #### Option 2: Install from repository (requires build)
 
@@ -115,9 +146,9 @@ npm install @aaroncode/iframe-bridge
    git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
    cd wdi_kyc_sdk_web
    ```
-2. Compile the TypeScript code using the command:
+2. Compile the TypeScript code:
    ```bash
-   npm run build
+   npm install -g typescript
    tsc
    ```
    This will generate the JavaScript files in the `dist/` folder.
@@ -126,6 +157,23 @@ npm install @aaroncode/iframe-bridge
    ```js
    import { KycIframeBridge } from "./index.js";
    ```
+
+#### Option 3: Install from npm (recommended for projects with bundler)
+
+```bash
+npm install @aaroncode/iframe-bridge
+```
+
+Then import the library in your code:
+```js
+import { KycIframeBridge } from "@aaroncode/iframe-bridge";
+```
+
+
+
+##### ~~CDN Option~~
+
+> ⚠️ **Not available:** The library does not work correctly if imported directly from CDN.
 
 ---
 
@@ -195,4 +243,4 @@ const bridge = new KycIframeBridge({
 ## Notas / Notes
 
 - Solo se permite comunicación por `postMessage` (no acceso directo al DOM del iframe si es cross-origin).
-- Only `postMessage` communication is allowed (no direct DOM access if cross
+- Only `postMessage` communication is allowed
