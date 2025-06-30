@@ -28,10 +28,9 @@ Librería para facilitar la comunicación segura entre una aplicación padre y u
    git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
    cd wdi_kyc_sdk_web
    ```
-2. Compila el código TypeScript:
+2. Compila el código TypeScript (si no tienes typescript usa el comando npm install -g typescript y luego se deber compilar):
    ```bash
-   npm install -g typescript
-   tsc
+   npm run build
    ```
    Esto generará los archivos JavaScript en la carpeta `dist/`.
 3. Copia el archivo `dist/index.js` a tu proyecto (por ejemplo, al mismo nivel que tu archivo HTML o JS principal).
@@ -90,22 +89,26 @@ import { KycIframeBridge } from "@aaroncode/iframe-bridge";
 #### Ejemplo de uso
 
 ```js
+import { KycIframeBridge } from "./index.js";
 const bridge = new KycIframeBridge({
-    iframeId: "kycIframe",
-    buttonId: "openKycBtn",
-    allowedOrigins: ["http://localhost:45679"],
-    iframeUrl: "http://localhost:45679/kyc",
-    entity: {
-        id: "usuario-123",
-        apiKey: "api-key-xyz"
-    },
-    onExit: (data) => {
-        document.getElementById("mensaje").textContent = "KYC cerrado: " + (data?.message || "");
-    },
-    onError: (data) => {
-        document.getElementById("mensaje").textContent = "Error: " + (data?.message || "");
-    }
+  iframeId: "kycIframe",
+  buttonId: "openKycBtn",
+  allowedOrigins: ["https://remkyc-x.wdi.net/kyc"],
+  iframeUrl: "https://remkyc-x.wdi.net/kyc",
+  entity: {
+    id: "123",
+    apiKey: "abc123",
+  },
+  onExit: (data) => {
+    document.getElementById("mensaje").textContent =
+      "KYC cerrado: " + (data?.message || "");
+  },
+  onError: (data) => {
+    document.getElementById("mensaje").textContent =
+      "Error: " + (data?.message || "");
+  },
 });
+
 ```
 
 #### Opciones del constructor
@@ -146,10 +149,10 @@ const bridge = new KycIframeBridge({
    git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
    cd wdi_kyc_sdk_web
    ```
-2. Compile the TypeScript code:
+2. Compile the TypeScript code (if you don't have typescript use the command npm install -g typescript and then it should compile)
    ```bash
-   npm install -g typescript
-   tsc
+
+   npm run build
    ```
    This will generate the JavaScript files in the `dist/` folder.
 3. Copy the `dist/index.js` file to your project (for example, next to your main HTML or JS file).
@@ -208,22 +211,26 @@ import { KycIframeBridge } from "@aaroncode/iframe-bridge";
 #### Usage example
 
 ```js
+import { KycIframeBridge } from "./index.js";
 const bridge = new KycIframeBridge({
-    iframeId: "kycIframe",
-    buttonId: "openKycBtn",
-    allowedOrigins: ["http://localhost:45679"],
-    iframeUrl: "http://localhost:45679/kyc",
-    entity: {
-        id: "user-123",
-        apiKey: "api-key-xyz"
-    },
-    onExit: (data) => {
-        document.getElementById("mensaje").textContent = "KYC closed: " + (data?.message || "");
-    },
-    onError: (data) => {
-        document.getElementById("mensaje").textContent = "Error: " + (data?.message || "");
-    }
+  iframeId: "kycIframe",
+  buttonId: "openKycBtn",
+  allowedOrigins: ["https://remkyc-x.wdi.net/kyc"],
+  iframeUrl: "https://remkyc-x.wdi.net/kyc",
+  entity: {
+    id: "123",
+    apiKey: "abc123",
+  },
+  onExit: (data) => {
+    document.getElementById("mensaje").textContent =
+      "KYC cerrado: " + (data?.message || "");
+  },
+  onError: (data) => {
+    document.getElementById("mensaje").textContent =
+      "Error: " + (data?.message || "");
+  },
 });
+
 ```
 
 #### Constructor options
