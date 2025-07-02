@@ -1,4 +1,4 @@
-# @aaroncode/iframe-bridge
+# iframe-bridge
 
 Librería para facilitar la comunicación segura entre una aplicación padre y un iframe usando `postMessage`.
 
@@ -12,51 +12,24 @@ Librería para facilitar la comunicación segura entre una aplicación padre y u
 
 1. Instala la librería:
    ```bash
-   npm install @aaroncode/iframe-bridge
+   npm install git+https://bitbucket.org/ENTURA/wdi_kyc_sdk_web_repo.git
    ```
-2. Busca el archivo `index.js` dentro de `node_modules/@aaroncode/iframe-bridge/dist/`.
+2. Busca el archivo `index.js` dentro de `node_modules/iframe-bridge-compilado/dist/`.
 3. Copia ese archivo a tu proyecto (por ejemplo, al mismo nivel que tu archivo HTML o JS principal).
-4. Importa la librería en tu código:
+4. Tener en cuenta que el tag script donde usaras la lógica de la librería  tiene que tener el type="module"
+   ```html
+   <script type="module" src="tuArchivoJs.js"></script>
+   ```
+   
+5. Importa la librería en tu código js:
+
    ```js
    import { KycIframeBridge } from "./index.js";
    ```
 
-#### Opción 2: Instalar desde el repositorio (requiere compilar)
-
-1. Clona el repositorio (solo contiene código fuente TypeScript, no usa librerías de terceros):
-   ```bash
-   git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
-   cd wdi_kyc_sdk_web
-   ```
-2. Compila el código TypeScript (si no tienes typescript usa el comando npm install -g typescript y luego se deber compilar):
-   ```bash
-   npm run build
-   ```
-   Esto generará los archivos JavaScript en la carpeta `dist/`.
-3. Copia el archivo `dist/index.js` a tu proyecto (por ejemplo, al mismo nivel que tu archivo HTML o JS principal).
-4. Importa la librería en tu código:
-   ```js
-   import { KycIframeBridge } from "./index.js";
-   ```
-
-#### Opción 3: Instalar desde npm (recomendado para proyectos con bundler)
-
-```bash
-npm install @aaroncode/iframe-bridge
-```
-
-Luego importa la librería en tu código:
-```js
-import { KycIframeBridge } from "@aaroncode/iframe-bridge";
-```
 
 
 
-##### ~~Opción CDN~~
-
-> ⚠️ **No disponible:** La librería no funciona correctamente si se importa directamente desde CDN.
-
----
 
 ### Uso básico
 
@@ -64,33 +37,73 @@ import { KycIframeBridge } from "@aaroncode/iframe-bridge";
 
 ```html
 <button id="openKycBtn">Abrir KYC</button>
-<iframe id="kycIframe" style="display:none;width:600px;height:400px;"></iframe>
-<div id="mensaje"></div>
+
+<!-- Modal centrado con el iframe dentro -->
+<div id="kycModal" class="modal">
+  <div class="modal-content">
+
+    <iframe id="kycIframe" style="width:100%;height:100%; border:none; display:block;" allow="camera; microphone"></iframe>
+
+  </div>
+</div>
 ```
 
-#### 2. Usa la librería en tu JS
+#### 2. Agrega los estilos para el modal
 
-##### Opción A: Usando el archivo compilado localmente
+```css
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 1000px;
+  height:80%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  right: 16px;
+  top: 8px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+}
+.close:hover,
+.close:focus {
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+```
+
+#### 3. Usa la librería en tu archivo JS
 
 ```js
+//index.js es el archivo donde esta la lógica de la librería
 import { KycIframeBridge } from "./index.js";
-```
 
-##### Opción B: Importando desde npm (con bundler)
-
-```js
-import { KycIframeBridge } from "@aaroncode/iframe-bridge";
-```
-
-##### ~~Opción C: Importando desde CDN (jsDelivr)~~
-
-> ⚠️ **No disponible:** La librería no funciona correctamente si se importa directamente desde CDN.
-
-#### Ejemplo de uso
-
-```js
-import { KycIframeBridge } from "./index.js";
 const bridge = new KycIframeBridge({
+  modalId: "kycModal",
   iframeId: "kycIframe",
   buttonId: "openKycBtn",
   allowedOrigins: ["https://remkyc-x.wdi.net/kyc"],
@@ -100,14 +113,17 @@ const bridge = new KycIframeBridge({
     apiKey: "abc123",
   },
   onExit: (data) => {
-    document.getElementById("mensaje").textContent =
-      "KYC cerrado: " + (data?.message || "");
+    // La app KYC se puede cerrar por un error o por el usuario manualmente
+    console.log("KYC exit data:", data);
+   
+
   },
-  onError: (data) => {
-    document.getElementById("mensaje").textContent =
-      "Error: " + (data?.message || "");
-  },
+  onComplete: (data) => {
+    // Dentro de data llegara un objero con UUIDs
+     console.log("KYC complete data:", data);
+  }
 });
+
 
 ```
 
@@ -115,139 +131,13 @@ const bridge = new KycIframeBridge({
 
 | Opción         | Tipo     | Descripción                                        |
 | -------------- | -------- | -------------------------------------------------- |
+| modalId        | string   | ID del modal que contiene el iframe                |
 | iframeId       | string   | ID del iframe en el DOM                            |
-| buttonId       | string   | ID del botón que abre el iframe                    |
+| buttonId       | string   | ID del botón que abre el modal                     |
 | allowedOrigins | string[] | Lista de orígenes permitidos para recibir mensajes |
 | iframeUrl      | string   | URL que se cargará en el iframe                    |
 | entity         | object   | Datos que se enviarán al iframe                    |
-| onExit         | function | Callback al cerrar el iframe                       |
-| onError        | function | Callback para errores                              |
+| onExit         | function | Callback al cerrar el iframe/modal                 |
+| onComplete     | function | Callback cuando el flujo de la app kyc se completa |
 
 ---
-
-## English
-
-### Installation
-
-#### Option 1: Install from npm and copy the JS file
-
-1. Install the library:
-   ```bash
-   npm install @aaroncode/iframe-bridge
-   ```
-2. Find the `index.js` file inside `node_modules/@aaroncode/iframe-bridge/dist/`.
-3. Copy this file to your project (for example, next to your main HTML or JS file).
-4. Import the library in your code:
-   ```js
-   import { KycIframeBridge } from "./index.js";
-   ```
-
-#### Option 2: Install from repository (requires build)
-
-1. Clone the repository (it only contains TypeScript source code, no third-party libraries):
-   ```bash
-   git clone https://bitbucket.org/ENTURA/wdi_kyc_sdk_web.git
-   cd wdi_kyc_sdk_web
-   ```
-2. Compile the TypeScript code (if you don't have typescript use the command npm install -g typescript and then it should compile)
-   ```bash
-
-   npm run build
-   ```
-   This will generate the JavaScript files in the `dist/` folder.
-3. Copy the `dist/index.js` file to your project (for example, next to your main HTML or JS file).
-4. Import the library in your code:
-   ```js
-   import { KycIframeBridge } from "./index.js";
-   ```
-
-#### Option 3: Install from npm (recommended for projects with bundler)
-
-```bash
-npm install @aaroncode/iframe-bridge
-```
-
-Then import the library in your code:
-```js
-import { KycIframeBridge } from "@aaroncode/iframe-bridge";
-```
-
-
-
-##### ~~CDN Option~~
-
-> ⚠️ **Not available:** The library does not work correctly if imported directly from CDN.
-
----
-
-### Basic usage
-
-#### 1. Add elements to your HTML
-
-```html
-<button id="openKycBtn">Open KYC</button>
-<iframe id="kycIframe" style="display:none;width:600px;height:400px;"></iframe>
-<div id="mensaje"></div>
-```
-
-#### 2. Use the library in your JS
-
-##### Option A: Using the locally compiled file
-
-```js
-import { KycIframeBridge } from "./index.js";
-```
-
-##### Option B: Importing from npm (with bundler)
-
-```js
-import { KycIframeBridge } from "@aaroncode/iframe-bridge";
-```
-
-##### ~~Option C: Importing from CDN (jsDelivr)~~
-
-> ⚠️ **Not available:** The library does not work correctly if imported directly from CDN.
-
-#### Usage example
-
-```js
-import { KycIframeBridge } from "./index.js";
-const bridge = new KycIframeBridge({
-  iframeId: "kycIframe",
-  buttonId: "openKycBtn",
-  allowedOrigins: ["https://remkyc-x.wdi.net/kyc"],
-  iframeUrl: "https://remkyc-x.wdi.net/kyc",
-  entity: {
-    id: "123",
-    apiKey: "abc123",
-  },
-  onExit: (data) => {
-    document.getElementById("mensaje").textContent =
-      "KYC cerrado: " + (data?.message || "");
-  },
-  onError: (data) => {
-    document.getElementById("mensaje").textContent =
-      "Error: " + (data?.message || "");
-  },
-});
-
-```
-
-#### Constructor options
-
-| Option         | Type     | Description                                 |
-| -------------- | -------- | ------------------------------------------- |
-| iframeId       | string   | ID of the iframe in the DOM                 |
-| buttonId       | string   | ID of the button that opens the iframe      |
-| allowedOrigins | string[] | List of allowed origins to receive messages |
-| iframeUrl      | string   | URL to be loaded in the iframe              |
-| entity         | object   | Data to be sent to the iframe               |
-| onExit         | function | Callback when closing the iframe            |
-| onError        | function | Callback for errors                         |
-
----
-
-## Notas / Notes
-
-- Solo se permite comunicación por `postMessage` (no acceso directo al DOM del iframe si es cross-origin).
-- Only `postMessage` communication is allowed

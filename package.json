@@ -1,6 +1,6 @@
 {
-  "name": "@aaroncode/iframe-bridge",
-  "version": "0.1.10",
+  "name": "iframe-bridge",
+  "version": "0.1.11",
   "description": "Librería para comunicación entre app y iframe",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc && cp README.md dist/"
   },
   "keywords": [
     "iframe",
