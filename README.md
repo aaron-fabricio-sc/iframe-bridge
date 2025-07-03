@@ -1,10 +1,20 @@
 # iframe-bridge
 
-Librería para facilitar la comunicación segura entre una aplicación padre y un iframe usando `postMessage`.
+Librería para facilitar la comunicación segura entre una aplicación padre y la aplicación KYC usando `postMessage`.
 
 ---
 
 ## Español
+
+## Datos necesarios
+
+Antes de usar la librería necesita tener el ID de la configuración de la entidad y el Key ID de la configuración para obtenerlo necesita ir a la aplicación REM BIZ
+
+1. Ingrese con su entidad emisora.
+2. (En caso de que no tenga una configuración)En el menu lateral entre a KYC Configurations y para crear una configuración entre a KYC Credentials, siga los pasos y cree la configuración.
+3. La lista de configuraciones de credenciales esta en el menu lateral 'KYC Configurations' -> 'KYC Api Key' ingrese ahi y vera la tabla con las configuraciones 'El ID de la configuración se encuentra en esa tabla' (Guarde el id de la configuración que necesita).
+4. (En caso de que la configuración no tenga una Api Key) En la tabla de las configuraciones presione el botón `See Api Keys` que abrirá un modal en el cual podrá crear un Api Key.
+5. En ese mismo modal vera la lista de Api Keys de la configuración (Guarde el Key Id que necesita).
 
 ### Instalación
 
@@ -108,9 +118,10 @@ const bridge = new KycIframeBridge({
   buttonId: "openKycBtn",
   allowedOrigins: ["https://remkyc-x.wdi.net/kyc"],
   iframeUrl: "https://remkyc-x.wdi.net/kyc",
+  //Reemplace los valores por los Ids que se menciona al principio del Readme
   entity: {
-    id: "123",
-    apiKey: "abc123",
+    id: "ID de la configuración",
+    apiKey: "Key Id de la configuración",
   },
   onExit: (data) => {
     // La app KYC se puede cerrar por un error o por el usuario manualmente
@@ -119,7 +130,7 @@ const bridge = new KycIframeBridge({
 
   },
   onComplete: (data) => {
-    // Dentro de data llegara un objero con UUIDs
+    // Dentro de data llegara un objeto con UUIDs si los necesita 
      console.log("KYC complete data:", data);
   }
 });
