@@ -15,6 +15,7 @@ export interface KycIframeBridgeOptions {
   entity: KycEntity; // Datos de la entidad a enviar
   onExit?: (data: any) => void; // Callback opcional al cerrar el flujo
   onComplete?: (data: any) => void; // Callback opcional al completar la acción
+  onError?: (data: any) => void; // Callback opcional al ocurrir un error
 }
 
 // Clase principal que gestiona la comunicación con el iframe dentro de un modal
@@ -27,6 +28,7 @@ export class KycIframeBridge {
   private entity: KycEntity;
   private onExit?: (data: any) => void;
   private onComplete?: (data: any) => void;
+  private onError?: (data: any) => void;
 
   constructor(options: KycIframeBridgeOptions) {
     // Obtiene las referencias a los elementos del DOM
@@ -42,6 +44,7 @@ export class KycIframeBridge {
     this.entity = options.entity;
     this.onExit = options.onExit;
     this.onComplete = options.onComplete;
+    this.onError = options.onError;
 
     // Asigna el evento click al botón para abrir el modal con el iframe
     this.button.addEventListener("click", this.openModal.bind(this));
@@ -86,6 +89,10 @@ export class KycIframeBridge {
     }
     if (data.type === "complete") {
       if (this.onComplete) this.onComplete(data);
+      this.closeModal();
+    }
+    if (data.type === "error") {
+      if (this.onError) this.onError(data);
       this.closeModal();
     }
   }

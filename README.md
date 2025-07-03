@@ -132,6 +132,10 @@ const bridge = new KycIframeBridge({
   onComplete: (data) => {
     // Dentro de data llegara un objeto con UUIDs si los necesita 
      console.log("KYC complete data:", data);
+  },
+  onError: (data) => {
+    // Evento que se ejecutara cuando ocurra un error
+     console.log("KYC error data:", data);
   }
 });
 
@@ -150,5 +154,6 @@ const bridge = new KycIframeBridge({
 | entity         | object   | Datos que se enviarán al iframe                    |
 | onExit         | function | Callback al cerrar el iframe/modal                 |
 | onComplete     | function | Callback cuando el flujo de la app kyc se completa |
+| onError        | function | Callback cuando ocurra un error                    |
 
 ---
