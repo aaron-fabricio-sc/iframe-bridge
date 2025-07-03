@@ -78,12 +78,13 @@ export class KycIframeBridge {
   // Maneja los mensajes recibidos desde el iframe
   private handleMessage(event: MessageEvent): void {
     const { type, data } = event.data || {};
+    console.log("Mensaje recibido del iframe:", type, data);
 
-    if (type === "exitRequest") {
+    if (data.type === "exit") {
       if (this.onExit) this.onExit(data);
       this.closeModal();
     }
-    if (type === "complete") {
+    if (data.type === "complete") {
       if (this.onComplete) this.onComplete(data);
       this.closeModal();
     }
