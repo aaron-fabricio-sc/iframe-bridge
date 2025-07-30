@@ -2,6 +2,7 @@
 export interface KycEntity {
   id: string;
   apiKey: string;
+  language: string;
   [key: string]: any;
 }
 
