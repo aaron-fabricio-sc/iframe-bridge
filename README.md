@@ -122,7 +122,7 @@ const bridge = new KycIframeBridge({
   entity: {
     id: "ID de la configuración",
     apiKey: "Key Id de la configuración",
-    language:"Usa el ISO 2 para enviarle el idioma ej (es, en)"
+    language:"Ejemplos válidos tienen que ser idioma y region: `es-BO`, `es-MX`, `en-US`, `en-GB`."
   },
   onExit: (data) => {
     // La app KYC se puede cerrar por un error o por el usuario manualmente
