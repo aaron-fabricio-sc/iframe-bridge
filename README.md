@@ -108,6 +108,34 @@ Antes de usar la librería necesita tener el ID de la configuración de la entid
 
 #### 3. Usa la librería en tu archivo JS
 
+### Configuración de la entidad (`entity`)
+
+El objeto `entity` se envía al iframe y tiene la siguiente estructura:
+
+```ts
+entity: {
+  id: string;       // ID único de la configuración de la entidad
+  apiKey: string;   // Clave API asociada a la configuración
+  language: string; // Idioma y región en formato válido, por ejemplo: "es-BO", "es-MX", "en-US", "en-GB"
+  hostData?: JsonObject | null; 
+  /* 
+     JSON personalizado opcional que se envía al iframe. 
+     Puede ser null o no estar presente. 
+     Debe contener únicamente datos serializables a JSON:
+       - string, number, boolean, null
+       - objetos anidados (`JsonObject`)
+       - arrays (`JsonArray`)
+     Ejemplos válidos:
+
+     hostData: { name: "Juan", age: 30, active: true }
+
+     hostData: { preferences: { theme: "dark", notifications: true }, roles: ["admin", "user"] }
+
+     hostData: null // cuando no hay datos a enviar
+  */
+}
+```
+
 ```js
 //index.js es el archivo donde esta la lógica de la librería
 import { KycIframeBridge } from "./index.js";
@@ -122,7 +150,8 @@ const bridge = new KycIframeBridge({
   entity: {
     id: "ID de la configuración",
     apiKey: "Key Id de la configuración",
-    language:"Ejemplos válidos tienen que ser idioma y region: `es-BO`, `es-MX`, `en-US`, `en-GB`."
+    language:"es-BO"
+    hostData:{ name: "Juan", age: 30 }
   },
   onExit: (data) => {
     // La app KYC se puede cerrar por un error o por el usuario manualmente

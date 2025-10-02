@@ -1,9 +1,21 @@
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonObject
+  | JsonArray;
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+export interface JsonArray extends Array<JsonValue> {}
+
 // Interfaz para los datos de la entidad que se enviarán al iframe
 export interface KycEntity {
   id: string;
   apiKey: string;
   language: string;
-  [key: string]: any;
+  hostData?: JsonObject | null;
 }
 
 // Opciones de configuración para la clase KycIframeBridge
