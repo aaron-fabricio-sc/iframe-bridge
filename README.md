@@ -117,7 +117,7 @@ entity: {
   id: string;       // ID único de la configuración de la entidad
   apiKey: string;   // Clave API asociada a la configuración
   language: string; // Idioma y región en formato válido, por ejemplo: "es-BO", "es-MX", "en-US", "en-GB"
-  hostData?: JsonObject | null; 
+  deviceData?: JsonObject | null; 
   /* 
      JSON personalizado opcional que se envía al iframe. 
      Puede ser null o no estar presente. 
@@ -127,11 +127,11 @@ entity: {
        - arrays (`JsonArray`)
      Ejemplos válidos:
 
-     hostData: { name: "Juan", age: 30, active: true }
+     deviceData: { name: "Juan", age: 30, active: true }
 
-     hostData: { preferences: { theme: "dark", notifications: true }, roles: ["admin", "user"] }
+     deviceData: { preferences: { theme: "dark", notifications: true }, roles: ["admin", "user"] }
 
-     hostData: null // cuando no hay datos a enviar
+     deviceData: null // cuando no hay datos a enviar
   */
 }
 ```
@@ -151,7 +151,7 @@ const bridge = new KycIframeBridge({
     id: "ID de la configuración",
     apiKey: "Key Id de la configuración",
     language:"es-BO"
-    hostData:{ name: "Juan", age: 30 }
+    deviceData:{ name: "Juan", age: 30 }
   },
   onExit: (data) => {
     // La app KYC se puede cerrar por un error o por el usuario manualmente

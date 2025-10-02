@@ -15,7 +15,7 @@ export interface KycEntity {
   id: string;
   apiKey: string;
   language: string;
-  hostData?: JsonObject | null;
+  deviceData?: JsonObject | null;
 }
 
 // Opciones de configuración para la clase KycIframeBridge
