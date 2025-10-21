@@ -93,6 +93,10 @@ export class KycIframeBridge {
 
   // Maneja los mensajes recibidos desde el iframe
   private handleMessage(event: MessageEvent): void {
+    if (!event.data || !event.data.data) {
+      return; // Ignora mensajes que no tienen la estructura correcta
+    }
+
     const { type, data } = event.data || {};
 
     if (data.type === "exit") {
