@@ -16,6 +16,8 @@ export interface KycEntity {
   apiKey: string;
   language: string;
   deviceData?: JsonObject | null;
+  phoneCountryCode?: string;
+  phoneNumber?: string;
 }
 
 // Opciones de configuración para la clase KycIframeBridge

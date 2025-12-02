@@ -37,10 +37,6 @@ Antes de usar la librería necesita tener el ID de la configuración de la entid
    import { KycIframeBridge } from "./index.js";
    ```
 
-
-
-
-
 ### Uso básico
 
 #### 1. Agrega los elementos en tu HTML
@@ -132,7 +128,10 @@ entity: {
      deviceData: { preferences: { theme: "dark", notifications: true }, roles: ["admin", "user"] }
 
      deviceData: null // cuando no hay datos a enviar
+    
   */
+  phoneCountryCode?: string;
+  phoneNumber?: string;
 }
 ```
 
@@ -152,7 +151,11 @@ const bridge = new KycIframeBridge({
     apiKey: "Key Id de la configuración",
     language:"es-BO"
     deviceData:{ name: "Juan", age: 30 }
+     phoneCountryCode: "+591";
+     phoneNumber: "7777777";
+
   },
+
   onExit: (data) => {
     // La app KYC se puede cerrar por un error o por el usuario manualmente
     console.log("KYC exit data:", data);
